@@ -15,6 +15,7 @@ const History = () => {
   const [sortDirection, setSortDirecttion] = useState("desc");
   const [filteredData, setFilteredData] = useState([]);
 
+  console.log(aiResponses);
   useEffect(() => {
     setFilteredData(aiResponses);
   }, []);
@@ -106,7 +107,7 @@ const History = () => {
                   </th>
                 </tr>
               </thead>
-              {filteredData.length > 0 ? (
+              {filteredData?.length > 0 ? (
                 <tbody>
                   {filteredData?.map((item, index) => (
                     <tr key={index}>
@@ -114,7 +115,7 @@ const History = () => {
                         {item?.templateSlugName}
                       </td>
                       <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                        {(item?.aiResponse).substring(0, 51)}...
+                        {(item?.aiResponse)?.substring(0, 51)}...
                       </td>
                       <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                         {new Date(item?.createdAt).toLocaleDateString()}

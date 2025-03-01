@@ -1,48 +1,109 @@
+import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./pages/Home";
-import SignIn from "./pages/SignIn";
-import Signup from "./pages/Signup";
-import DashboardLayout from "./pages/dashboard/DashboardLayout";
-import History from "./pages/dashboard/History";
-import ProtectedRoute from "./components/common/ProtectedRoute";
-import HomeDashboard from "./pages/dashboard/Home";
-import Billing from "./pages/dashboard/Billing";
-import Content from "./pages/dashboard/Content";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { PuffLoader } from "react-spinners";
 import { fetchAiResponseData, fetchUserData } from "./apis/apiServices";
 import { restoreUserData, setAiData } from "./slices/userSlice";
-import { PuffLoader } from "react-spinners";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import NotFound from "./pages/NotFound";
 
-// Define your routes
+// Lazy load pages
+const Home = lazy(() => import("./pages/Home"));
+const SignIn = lazy(() => import("./pages/SignIn"));
+const Signup = lazy(() => import("./pages/Signup"));
+const DashboardLayout = lazy(() => import("./pages/dashboard/DashboardLayout"));
+const HomeDashboard = lazy(() => import("./pages/dashboard/Home"));
+const History = lazy(() => import("./pages/dashboard/History"));
+const Billing = lazy(() => import("./pages/dashboard/Billing"));
+const Content = lazy(() => import("./pages/dashboard/Content"));
+
+// Loading fallback component
+const Loader = () => (
+  <div className="flex justify-center items-center h-32">
+    <PuffLoader />
+  </div>
+);
+
+// Define routes with lazy loading
 const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <Home />,
+      element: (
+        <Suspense fallback={<Loader />}>
+          <Home />
+        </Suspense>
+      ),
     },
     {
       path: "/signin",
-      element: <SignIn />,
+      element: (
+        <Suspense fallback={<Loader />}>
+          <SignIn />
+        </Suspense>
+      ),
     },
     {
       path: "/signup",
-      element: <Signup />,
+      element: (
+        <Suspense fallback={<Loader />}>
+          <Signup />
+        </Suspense>
+      ),
     },
     {
       path: "/dashboard",
-      element: <ProtectedRoute />, // Protects the dashboard and nested routes
+      element: <ProtectedRoute />,
       children: [
         {
-          element: <DashboardLayout />,
+          element: (
+            <Suspense fallback={<Loader />}>
+              <DashboardLayout />
+            </Suspense>
+          ),
           children: [
-            { index: true, element: <HomeDashboard /> },
-            { path: "history", element: <History /> },
-            { path: "billing", element: <Billing /> },
-            { path: "content/:slugName", element: <Content /> },
+            {
+              index: true,
+              element: (
+                <Suspense fallback={<Loader />}>
+                  <HomeDashboard />
+                </Suspense>
+              ),
+            },
+            {
+              path: "history",
+              element: (
+                <Suspense fallback={<Loader />}>
+                  <History />
+                </Suspense>
+              ),
+            },
+            {
+              path: "billing",
+              element: (
+                <Suspense fallback={<Loader />}>
+                  <Billing />
+                </Suspense>
+              ),
+            },
+            {
+              path: "content/:slugName",
+              element: (
+                <Suspense fallback={<Loader />}>
+                  <Content />
+                </Suspense>
+              ),
+            },
+            { path: "*", element: <NotFound /> },
           ],
         },
+        { path: "*", element: <NotFound /> },
       ],
+    },
+    {
+      path: "*",
+      element: <NotFound />,
     },
   ],
   {
@@ -55,7 +116,7 @@ const router = createBrowserRouter(
 
 function App() {
   const dispatch = useDispatch();
-  const { token, isAuthenticated } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -84,17 +145,9 @@ function App() {
     }
   }, [dispatch, token]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-32">
-        <PuffLoader />
-      </div>
-    );
-  }
+  if (loading) return <Loader />;
+  if (error) return <div>{error}</div>;
 
-  if (error) {
-    return <div>{error}</div>;
-  }
   return <RouterProvider router={router} />;
 }
 

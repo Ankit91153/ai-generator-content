@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import FormSection from "../../components/dashboard/FormSection";
@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { chatSession } from "../../hooks/AiModal";
 import { useMutation } from "@tanstack/react-query";
-import { setTotalWordUsage } from "../../slices/userSlice";
+import { setTotalWordUsage ,setAiResponses} from "../../slices/userSlice";
 import { saveGeneratedContent } from "../../apis/apiServices";
 
 const Content = (props) => {
@@ -23,6 +23,16 @@ const Content = (props) => {
   const selectedTemplate = TemplateLists?.find(
     (item) => item?.slug === slugName
   );
+
+  useEffect(() => {
+    // Extract valid slugs from TemplateLists
+    const validSlugs = TemplateLists.map(template => template.slug);
+
+    // Check if slug exists
+    if (!validSlugs.includes(slugName)) {
+      navigation("*", { replace: true });
+    }
+  }, [slugName, navigation]);
 
   const extractPlainText = (responseText) => {
     // Remove code block markers (```) and any ```rtf sections
@@ -64,6 +74,7 @@ const Content = (props) => {
       const newTotalUsage = Number(totalWordUsage) + totalWords;
 
       // Dispatch to update total word usage
+      dispatch(setAiResponses(data?.data));
       dispatch(setTotalWordUsage(newTotalUsage));
     },
     onError: (error) => {

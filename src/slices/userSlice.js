@@ -30,6 +30,9 @@ const userSlice = createSlice({
     setTotalWordUsage:(state,action)=>{      
         state.totalWordUsage=action.payload
     },
+    setAiResponses: (state, action) => {
+      state.aiResponses.push(action.payload); 
+    },
     restoreUserData: (state, action) => {
         const { userInfo, token } = action.payload;
         state.token = token;
@@ -44,7 +47,7 @@ const userSlice = createSlice({
 });
 
 // Export actions
-export const { loginSuccess, logout ,setTotalWordUsage,restoreUserData,setAiData} = userSlice.actions;
+export const { loginSuccess, logout ,setTotalWordUsage,restoreUserData,setAiData,setAiResponses} = userSlice.actions;
 
 // Export the user reducer
 export default userSlice.reducer;

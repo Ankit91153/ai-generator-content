@@ -144,7 +144,7 @@ const Billing = () => {
 
             <button
               className={`  border border-blue-700  text-center py-3 px-5 rounded-3xl flex gap-3 ${
-                userInfo.active &&
+                userInfo?.active &&
                 "bg-slate-800 text-white border-none cursor-not-allowed"
               }`}
               onClick={handleCreateSubscription}
