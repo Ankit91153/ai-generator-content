@@ -14,13 +14,11 @@ import { saveGeneratedContent } from "../../apis/apiServices";
 const Content = (props) => {
   const { slugName } = useParams();
   const navigation = useNavigate();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const [aiOutput, setAiOutput] = useState("");
   const { totalWordUsage, isAuthenticated, token, userInfo } = useSelector(
     (state) => state.user
   );
-
-
 
   const selectedTemplate = TemplateLists?.find(
     (item) => item?.slug === slugName
@@ -29,11 +27,11 @@ const Content = (props) => {
   const extractPlainText = (responseText) => {
     // Remove code block markers (```) and any ```rtf sections
     return responseText
-        .replace(/```[\w]*\n/g, '') // Remove markdown-style code block headers (e.g., ```cpp, ```rtf)
-        .replace(/```/g, '') // Remove remaining triple backticks
-        .replace(/{\\rtf1[\s\S]*}/g, '') // Remove RTF formatting completely
-        .trim();
-};
+      .replace(/```[\w]*\n/g, "") // Remove markdown-style code block headers (e.g., ```cpp, ```rtf)
+      .replace(/```/g, "") // Remove remaining triple backticks
+      .replace(/{\\rtf1[\s\S]*}/g, "") // Remove RTF formatting completely
+      .trim();
+  };
   const generateContent = async (formData) => {
     const selectPrompt = selectedTemplate?.aiPrompt;
     const FinalAIPrompt = JSON.stringify(formData) + "," + selectPrompt;
@@ -54,9 +52,6 @@ const Content = (props) => {
       userId: userInfo?._id,
     };
 
-    
-    
-
     // Call the API to save generated content
     return await saveGeneratedContent(data, token);
   };
@@ -64,11 +59,10 @@ const Content = (props) => {
   const { mutate, isPending } = useMutation({
     mutationFn: generateContent,
     onSuccess: (data) => {
-        
       setAiOutput(data?.data?.aiResponse);
       const totalWords = data?.data?.aiResponse?.split(/\s+/).length;
       const newTotalUsage = Number(totalWordUsage) + totalWords;
-      
+
       // Dispatch to update total word usage
       dispatch(setTotalWordUsage(newTotalUsage));
     },
@@ -113,7 +107,7 @@ const Content = (props) => {
         />
         {/* OutputSection */}
         <div className="col-span-2">
-          <OutputSection aiOutput={aiOutput} setAiOutput={setAiOutput}/>
+          <OutputSection aiOutput={aiOutput} setAiOutput={setAiOutput} />
         </div>
       </div>
     </div>
