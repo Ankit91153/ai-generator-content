@@ -26,7 +26,14 @@ const Content = (props) => {
     (item) => item?.slug === slugName
   );
 
-
+  const extractPlainText = (responseText) => {
+    // Remove code block markers (```) and any ```rtf sections
+    return responseText
+        .replace(/```[\w]*\n/g, '') // Remove markdown-style code block headers (e.g., ```cpp, ```rtf)
+        .replace(/```/g, '') // Remove remaining triple backticks
+        .replace(/{\\rtf1[\s\S]*}/g, '') // Remove RTF formatting completely
+        .trim();
+};
   const generateContent = async (formData) => {
     const selectPrompt = selectedTemplate?.aiPrompt;
     const FinalAIPrompt = JSON.stringify(formData) + "," + selectPrompt;
@@ -37,7 +44,8 @@ const Content = (props) => {
       throw new Error("Failed to get response from chatSession.");
     }
 
-    const output = result.response.text();
+    let output = result.response.text();
+    output = extractPlainText(output);
 
     const data = {
       aiResponse: output,
@@ -60,7 +68,6 @@ const Content = (props) => {
       setAiOutput(data?.data?.aiResponse);
       const totalWords = data?.data?.aiResponse?.split(/\s+/).length;
       const newTotalUsage = Number(totalWordUsage) + totalWords;
-      console.log(newTotalUsage);
       
       // Dispatch to update total word usage
       dispatch(setTotalWordUsage(newTotalUsage));

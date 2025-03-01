@@ -98,9 +98,6 @@ export const createSubscriptionApi = async (token) => {
 };
 
 export const savePaymentApi = async ({ token, paymentId }) => {
-  console.log("inisde the save payment API");
-  console.log(token);
-  console.log(paymentId);
 
   const response = await axios.post(
     `${BASEURL}/payment/save-payment`,

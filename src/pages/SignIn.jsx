@@ -30,13 +30,10 @@ const SignIn = () => {
       toast.success("Successfully signed in!");
       navigation("/dashboard");
     },
-    onError: (error) => {
-      console.log(error);
-      
+    onError: (error) => {      
       toast.error(
         error?.response?.data?.errors[0] || "Login failed. Please try again."
       );
-      console.error("Login Error:", error.message);
     },
   });
 

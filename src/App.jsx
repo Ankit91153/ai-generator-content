@@ -56,8 +56,6 @@ const router = createBrowserRouter(
 function App() {
   const dispatch = useDispatch();
   const { token, isAuthenticated } = useSelector((state) => state.user);
-  console.log(token);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -66,8 +64,6 @@ function App() {
       const fetchData = async () => {
         try {
           const userData = await fetchUserData(token);
-          console.log(userData);
-
           if (userData) {
             dispatch(restoreUserData({ token, userInfo: userData?.data }));
           }

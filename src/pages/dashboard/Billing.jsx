@@ -64,14 +64,12 @@ const Billing = () => {
       name: "AI Content",
       description: "AI Content monthly subscriptions",
       handler: async (resp) => {
-        console.log(resp);
 
         if (!resp?.razorpay_payment_id) {
           setLoading(false);
           return;
         }
         const paymentId = resp?.razorpay_payment_id;
-        console.log(paymentId);
 
         savePayment({ token, paymentId });
       },
